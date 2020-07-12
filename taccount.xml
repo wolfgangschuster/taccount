@@ -1,0 +1,8 @@
+<package>
+    <!-- Documentation -->
+    <file>doc/context/third/taccount/README</file>
+    <!-- Files -->
+    <file>tex/context/third/taccount/t-taccount.mkvi</file>
+    <!-- Interface -->
+    <file>tex/context/interface/third/i-taccount.xml</file>
+</package>

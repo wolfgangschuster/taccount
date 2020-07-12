@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?context-directive job ctxfile x-setups.ctx ?>
+
+<cd:interface xmlns:cd="http://www.pragma-ade.com/commands">
+
+    <cd:command name="definetaccount" level="style" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="keyword-name"/>
+            <cd:resolve name="keyword-name-optional"/>
+            <cd:assignments list="yes" optional="yes">
+                <cd:inherit name="setuptaccount"/>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="setuptaccount" level="style" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="keyword-name-list-optional"/>
+            <cd:assignments list="yes" optional="yes">
+                <cd:parameter name="textstyle">
+                    <cd:resolve name="value-style"/>
+                </cd:parameter>
+                <cd:parameter name="textcolor">
+                    <cd:constant type="cd:color"/>
+                </cd:parameter>
+                <cd:parameter name="numberstyle">
+                    <cd:resolve name="value-style"/>
+                </cd:parameter>
+                <cd:parameter name="numbercolor">
+                    <cd:constant type="cd:color"/>
+                </cd:parameter>
+                <cd:parameter name="textcommand">
+                    <cd:constant type="cd:oneargument"/>
+                </cd:parameter>
+                <cd:parameter name="numbercommand">
+                    <cd:constant type="cd:oneargument"/>
+                </cd:parameter>
+                <cd:parameter name="distance">
+                    <cd:constant type="cd:dimension"/>
+                </cd:parameter>
+                <cd:parameter name="textdistance">
+                    <cd:constant type="cd:dimension"/>
+                </cd:parameter>
+                <cd:parameter name="strut">
+                    <cd:constant type="yes" default="yes"/>
+                    <cd:constant type="no"/>
+                </cd:parameter>
+                <cd:parameter name="mp">
+                    <cd:constant type="taccount:line"/>
+                    <cd:constant type="taccount:nose"/>
+                    <cd:constant type="cd:name"/>
+                </cd:parameter>
+                <cd:inherit name="setupframed"/>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="taccount" type="environment" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="keyword-name-optional"/>
+            <cd:assignments list="yes" optional="yes">
+                <cd:parameter name="title">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="lefttext">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="righttext">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="taccount" type="environment" generated="yes" variant="example" level="document" file="t-taccount.mkvi">
+        <cd:sequence>
+            <cd:variable value="taccount"/>
+        </cd:sequence>
+        <cd:arguments>
+            <cd:assignments list="yes" optional="yes">
+                <cd:parameter name="title">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="lefttext">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="righttext">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="debits" type="environment" level="document" file="t-taccount.mkvi"/>
+
+    <cd:command name="credits" type="environment" level="document" file="t-taccount.mkvi"/>
+
+    <cd:command name="debit" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="argument-text"/>
+            <cd:resolve name="argument-number"/>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="debit" variant="assignment" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:assignments list="yes">
+                <cd:parameter name="text">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="number">
+                    <cd:constant type="cd:number"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="debittotal" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="argument-number"/>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="debittotal" variant="assignment" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:assignments list="yes">
+                <cd:parameter name="number">
+                    <cd:constant type="cd:number"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="credit" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="argument-text"/>
+            <cd:resolve name="argument-number"/>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="credit" variant="assignment" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:assignments list="yes">
+                <cd:parameter name="text">
+                    <cd:constant type="cd:text"/>
+                </cd:parameter>
+                <cd:parameter name="number">
+                    <cd:constant type="cd:number"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="credittotal" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:resolve name="argument-number"/>
+        </cd:arguments>
+    </cd:command>
+
+    <cd:command name="credittotal" variant="assignment" level="document" file="t-taccount.mkvi">
+        <cd:arguments>
+            <cd:assignments list="yes">
+                <cd:parameter name="number">
+                    <cd:constant type="cd:number"/>
+                </cd:parameter>
+            </cd:assignments>
+        </cd:arguments>
+    </cd:command>
+
+</cd:interface>
