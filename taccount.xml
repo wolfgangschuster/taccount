@@ -1,8 +1,9 @@
 <package>
     <!-- Documentation -->
-    <file>doc/context/third/taccount/README</file>
+    <file>doc/context/third/taccount/README.md</file>
     <!-- Files -->
     <file>tex/context/third/taccount/t-taccount.mkvi</file>
+    <file>tex/context/third/taccount/t-taccount.mkxl</file>
     <!-- Interface -->
     <file>tex/context/interface/third/i-taccount.xml</file>
 </package>

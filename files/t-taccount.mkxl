@@ -1,0 +1,374 @@
+%D \module
+%D   [       file=t-taccount,
+%D        version=2020.11.22,
+%D          title=\CONTEXT\ User Module,
+%D       subtitle=Creating T-Account graphics,
+%D         author=Wolfgang Schuster,
+%D           date=\currentdate,
+%D      copyright=Wolfgang Schuster]
+
+%C Copyright (C) 2017  Wolfgang Schuster
+%C
+%C This program is free software: you can redistribute it and/or modify
+%C it under the terms of the GNU General Public License as published by
+%C the Free Software Foundation, either version 3 of the License, or
+%C (at your option) any later version.
+%C
+%C This program is distributed in the hope that it will be useful,
+%C but WITHOUT ANY WARRANTY; without even the implied warranty of
+%C MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%C GNU General Public License for more details.
+%C
+%C You should have received a copy of the GNU General Public License
+%C along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+% begin info
+%
+% title   : t-account tables
+% comment : environment to create t-account tables with titles and total values
+% status  : final
+%
+% end info
+
+\writestatus{loading}{Context User Module / Miscellaneous}
+
+\unprotect
+
+\installnamespace                           {taccount}
+\installframedcommandhandler \????taccount {taccount} \????taccount
+
+\startinterface all
+  \setinterfacevariable {taccount} {taccount}
+\stopinterface
+
+\newtoks\t_taccount_reset
+\newtoks\t_taccount_debit
+\newtoks\t_taccount_credit
+
+\appendtoks
+  \t_taccount_debit \emptytoks
+  \t_taccount_credit\emptytoks
+\to \t_taccount_reset
+
+\newbox\b_taccount_title
+\newbox\b_taccount_debit
+\newbox\b_taccount_credit
+\newbox\b_taccount_total
+
+\appendtoks
+  \global\setbox\b_taccount_title \emptyhbox
+  \global\setbox\b_taccount_debit \emptyhbox
+  \global\setbox\b_taccount_credit\emptyhbox
+  \global\setbox\b_taccount_total \emptyhbox
+\to \t_taccount_reset
+
+\newdimen\d_taccount_text
+\newdimen\d_taccount_number
+\newdimen\d_taccount_column
+\newdimen\d_taccount_total
+
+\appendtoks
+  \global\d_taccount_text  \zeropoint
+  \global\d_taccount_number\zeropoint
+  \global\d_taccount_column\zeropoint
+  \global\d_taccount_total \zeropoint
+\to \t_taccount_reset
+
+\appendtoks
+  \let\m_taccount_entry       \gobbletwoarguments
+  \let\m_taccount_debit_total \empty
+  \let\m_taccount_credit_total\empty
+\to \t_taccount_reset
+
+\permanent\tolerant\protected\def\starttaccount[#1]#*[#2]%
+  {\begingroup
+   \ifarguments
+     \let\currenttaccount\empty
+   \or
+     \ifhastok={#1}%
+       \let\currenttaccount\empty
+       \setupcurrenttaccount[#1]%
+     \else
+       \edef\currenttaccount{#1}%
+     \fi
+   \or
+     \edef\currenttaccount{#1}%
+     \setupcurrenttaccount[#2]%
+   \fi
+   \the\t_taccount_reset}
+
+\permanent\protected\def\stoptaccount
+  {\taccount_dimensions
+   \taccount_print
+   \endgroup}
+
+\appendtoks
+  \frozen\instance\setuevalue{\e!start\currenttaccount}{\starttaccount[\currenttaccount]}%
+  \frozen\instance\setuevalue{\e!stop \currenttaccount}{\stoptaccount}%
+\to \everydefinetaccount
+
+\permanent\tolerant\protected\def\taccount_debit[#1]#;#2#3%
+  {\ifparameter#1\or
+     \getdummyparameters[\c!text=,\c!number=,#1]%
+     \etoksapp\t_taccount_debit{\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
+   \else
+     \toksapp\t_taccount_debit{\m_taccount_entry{#2}{#3}}%
+   \fi
+   \ignorespaces}
+
+\permanent\tolerant\protected\def\taccount_debit_total[#1]#;#2%
+  {\ifparameter#1\or
+     \getdummyparameters[\c!number=,#1]%
+     \edef\m_taccount_debit_total{\dummyparameter\c!number}%
+   \else
+     \edef\m_taccount_debit_total{#2}%
+   \fi}
+
+\permanent\tolerant\protected\def\taccount_credit[#1]#;#2#3%
+  {\ifparameter#1\or
+     \getdummyparameters[\c!text=,\c!number=,#1]%
+     \etoksapp\t_taccount_credit{\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
+   \else
+     \toksapp\t_taccount_credit{\m_taccount_entry{#2}{#3}}%
+   \fi
+   \ignorespaces}
+
+\permanent\tolerant\protected\def\taccount_credit_total[#1]#;#2%
+  {\ifparameter#1\or
+     \getdummyparameters[\c!number=,#1]%
+     \edef\m_taccount_credit_total{\dummyparameter\c!number}%
+   \else
+     \edef\m_taccount_credit_total{#2}%
+   \fi}
+
+\appendtoks
+  \aliased\let\debit      \taccount_debit
+  \aliased\let\credit     \taccount_credit
+  \aliased\let\debittotal \taccount_debit_total
+  \aliased\let\credittotal\taccount_credit_total
+\to \t_taccount_reset
+
+\appendtoks
+  \let\startdebits \relax
+  \let\stopdebits  \relax
+  \let\startcredits\relax
+  \let\stopcredits \relax
+\to \t_taccount_reset
+
+\def\taccount_print_text#1%
+  {\begingroup
+     \usetaccountstyleandcolor\c!textstyle\c!textcolor
+     \ifx\p_taccount_strut\v!yes\strut\fi
+     \taccountparameter\c!textcommand{#1}%
+   \endgroup}
+
+\def\taccount_print_number#1%
+  {\begingroup
+     \usetaccountstyleandcolor\c!numberstyle\c!numbercolor
+     \ifx\p_taccount_strut\v!yes\strut\fi
+     \taccountparameter\c!numbercommand{#1}%
+   \endgroup}
+
+\def\m_taccount_entry_dimensions#1#2%
+  {\setbox\scratchboxone\hbox{\taccount_print_text  {#1}}%
+   \setbox\scratchboxtwo\hbox{\taccount_print_number{#2}}%
+   \ifdim\d_taccount_text<\wd\scratchboxone
+     \global\d_taccount_text\wd\scratchboxone
+   \fi
+   \ifdim\d_taccount_number<\wd\scratchboxtwo
+     \global\d_taccount_number\wd\scratchboxtwo
+   \fi}
+
+\def\taccount_dimensions
+  {\let\m_taccount_entry\m_taccount_entry_dimensions
+   \the\t_taccount_debit
+   \the\t_taccount_credit}
+
+\def\taccount_print_title
+  {\edef\p_taccount_lefttext {\taccountparameter\c!lefttext }%
+   \edef\p_taccount_title    {\taccountparameter\c!title    }%
+   \edef\p_taccount_righttext{\taccountparameter\c!righttext}%
+   \edef\m_taccount_title    {\p_taccount_lefttext\p_taccount_title\p_taccount_righttext}%
+   \ifempty\m_taccount_title \else
+     \global\setbox\b_taccount_title\hbox to \d_taccount_total
+       {\ifx\p_taccount_strut\v!yes\strut\fi
+        \rlap{\p_taccount_lefttext}%
+        \hfil
+        \p_taccount_title
+        \hfil
+        \llap{\p_taccount_righttext}}%
+     \copy\b_taccount_title
+   \fi}
+
+\def\m_taccount_entry_print#1#2%
+  {\hbox to \d_taccount_column
+     {\taccount_print_text{#1}%
+      \hfil
+      \taccount_print_number{#2}}}
+
+\def\taccount_print_debit
+  {\global\setbox\b_taccount_debit\vtop
+     {\let\m_taccount_entry\m_taccount_entry_print
+      \the\t_taccount_debit}%
+   \copy\b_taccount_debit}
+
+\def\taccount_print_credit
+  {\global\setbox\b_taccount_credit\vtop
+     {\let\m_taccount_entry\m_taccount_entry_print
+      \the\t_taccount_credit}%
+   \copy\b_taccount_credit}
+
+\def\taccount_print_total
+  {\edef\m_taccount_total{\m_taccount_debit_total\m_taccount_credit_total}%
+   \ifempty\m_taccount_total \else
+     \global\setbox\b_taccount_total\hbox
+       {\hbox to \d_taccount_column{\hfil\taccount_print_number\m_taccount_debit_total}%
+        \hskip\taccountparameter\c!distance
+        \hbox to \d_taccount_column{\hfil\taccount_print_number\m_taccount_credit_total}}%
+     \copy\b_taccount_total
+   \fi}
+
+\def\taccount_print
+  {\d_taccount_column\dimexpr\d_taccount_text+\d_taccount_number+\taccountparameter\c!textdistance\relax
+   \d_taccount_total \dimexpr\plustwo\d_taccount_column+\taccountparameter\c!distance\relax
+   \inheritedtaccountframed\bgroup
+     \beginvbox
+       \offinterlineskip
+       \edef\p_taccount_strut{\taccountparameter\c!strut}%
+       \taccount_print_title
+       \beginhbox
+         \vtop{\taccount_print_debit}%
+         \hskip\taccountparameter\c!distance
+         \vtop{\taccount_print_credit}%
+       \endhbox
+       \taccount_print_total
+     \endvbox
+   \egroup}
+
+\def\taccount_background
+  {\edef\p_taccount_mp{\taccountparameter\c!mp}%
+   \ifempty\p_taccount_mp \else
+     \useMPgraphic{\taccountparameter\c!mp}%
+   \fi}
+
+\defineoverlay[\v!taccount][\taccount_background]
+
+\startMPinitializations
+    TaccountTextWdith    := \the\d_taccount_text ;
+    TaccountNumberWidth  := \the\d_taccount_number ;
+    %
+    TaccountColumnWidth  := \the\dimexpr\d_taccount_total/2\relax ;
+    TaccountTotalWidth   := \the\d_taccount_total ;
+    TaccountColumnWidth  := \the\d_taccount_column ;
+    %
+    TaccountDebitHeight  := \the\boxtotal\b_taccount_debit ;
+    TaccountCreditHeight := \the\boxtotal\b_taccount_credit ;
+    TaccountTotalHeight  := \the\boxtotal\b_taccount_total ;
+\stopMPinitializations
+
+\startuseMPgraphic{taccount:line}
+    if TaccountDebitHeight > TaccountCreditHeight :
+        draw (TaccountTotalWidth/2,0) -- (TaccountTotalWidth/2,TaccountDebitHeight+TaccountTotalHeight) ;
+        draw (0,TaccountDebitHeight+TaccountTotalHeight) -- (TaccountTotalWidth,TaccountDebitHeight+TaccountTotalHeight) ;
+    else :
+        draw (TaccountTotalWidth/2,0) -- (TaccountTotalWidth/2,TaccountCreditHeight+TaccountTotalHeight) ;
+        draw (0,TaccountCreditHeight+TaccountTotalHeight) -- (TaccountTotalWidth,TaccountCreditHeight+TaccountTotalHeight) ;
+    fi
+    if TaccountTotalHeight > 0 :
+        draw (0,TaccountTotalHeight) -- (TaccountTotalWidth,TaccountTotalHeight) ;
+    fi
+    setbounds currentpicture to OverlayBox ;
+\stopuseMPgraphic
+
+\startuseMPgraphic{taccount:nose}
+    if TaccountDebitHeight = TaccountCreditHeight :
+        draw (TaccountTotalWidth/2,TaccountTotalHeight) -- (TaccountTotalWidth/2,TaccountDebitHeight+TaccountTotalHeight) ;
+        draw (0,TaccountDebitHeight+TaccountTotalHeight) -- (TaccountTotalWidth,TaccountDebitHeight+TaccountTotalHeight) ;
+        if TaccountTotalHeight > 0 :
+            draw (TaccountColumnWidth-TaccountNumberWidth,TaccountTotalHeight) -- (TaccountColumnWidth,TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,TaccountTotalHeight) -- (TaccountTotalWidth,TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,0) -- (TaccountTotalWidth,0) ;
+            draw (TaccountColumnWidth-TaccountNumberWidth,0) -- (TaccountColumnWidth,0) ;
+        fi
+    elseif TaccountDebitHeight > TaccountCreditHeight :
+        draw (TaccountTotalWidth/2,TaccountTotalHeight) -- (TaccountTotalWidth/2,TaccountDebitHeight+TaccountTotalHeight) ;
+        draw (0,TaccountDebitHeight+TaccountTotalHeight) -- (TaccountTotalWidth,TaccountDebitHeight+TaccountTotalHeight) ;
+        if TaccountTotalHeight > 0 :
+            draw (TaccountColumnWidth-TaccountNumberWidth,TaccountTotalHeight)
+              -- (TaccountTotalWidth/2,TaccountTotalHeight)
+              -- (TaccountTotalWidth-TaccountNumberWidth,TaccountDebitHeight-TaccountCreditHeight+TaccountTotalHeight)
+              -- (TaccountTotalWidth,TaccountDebitHeight-TaccountCreditHeight+TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,TaccountTotalHeight) -- (TaccountTotalWidth,TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,0) -- (TaccountTotalWidth,0) ;
+            draw (TaccountColumnWidth-TaccountNumberWidth,0) -- (TaccountColumnWidth,0) ;
+        fi
+    else :
+        draw (TaccountTotalWidth/2,0)--(TaccountTotalWidth/2,TaccountCreditHeight+TaccountTotalHeight) ;
+        draw (0,TaccountCreditHeight+TaccountTotalHeight)--(TaccountTotalWidth,TaccountCreditHeight+TaccountTotalHeight) ;
+        if TaccountTotalHeight > 0 :
+            draw (0,TaccountTotalHeight)
+              -- (TaccountNumberWidth,TaccountTotalHeight)
+              -- (TaccountColumnWidth-TaccountNumberWidth,TaccountCreditHeight-TaccountDebitHeight+TaccountTotalHeight)
+              -- (TaccountColumnWidth,TaccountCreditHeight-TaccountDebitHeight+TaccountTotalHeight) ;
+            draw (TaccountColumnWidth-TaccountNumberWidth,TaccountTotalHeight) -- (TaccountColumnWidth,TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,TaccountTotalHeight) -- (TaccountTotalWidth,TaccountTotalHeight) ;
+            draw (TaccountTotalWidth-TaccountNumberWidth,0) -- (TaccountTotalWidth,0) ;
+            draw (TaccountColumnWidth-TaccountNumberWidth,0) -- (TaccountColumnWidth,0) ;
+        fi
+    fi
+    setbounds currentpicture to OverlayBox ;
+\stopuseMPgraphic
+
+\setuptaccount
+  [    \c!distance=\emwidth,
+   \c!textdistance=\spaceamount,
+          \c!frame=\v!off,
+          \c!strut=\v!yes,
+         \c!offset=\v!overlay,
+     \c!background=\v!taccount]
+
+\protect
+
+\continueifinputfile{t-taccount.mkxl}
+
+\starttext
+
+\starttaccount[title=Bilanz,lefttext=Aktiva,righttext=Passiva]
+    \startdebits
+        \debit{Gebäude}  {1.800}
+        \debit{Maschinen}{1.200}
+        \debit{Fuhrpark}   {500}
+        \debit{Rohstoffe}  {100}
+        \debittotal      {3.600}
+    \stopdebits
+    \startcredits
+        \credit{Eigenkapital}{1.400}
+        \credit{Schulden}    {2.200}
+        \credittotal         {3.600}
+    \stopcredits
+\stoptaccount
+
+\startbuffer
+\starttaccount[title=Bilanz,lefttext=Aktiva,righttext=Passiva]
+    \startdebits
+        \debit[text={Gebäude},  number={1.800}]
+        \debit[text={Maschinen},number={1.200}]
+        \debit[text={Fuhrpark}, number={500}]
+        \debit[text={Rohstoffe},number={100}]
+        \debittotal[number={3.600}]
+    \stopdebits
+    \startcredits
+        \credit[text={Eigenkapital},number={1.400}]
+        \credit[text={Schulden},    number={2.200}]
+        \credittotal[number={3.600}]
+    \stopcredits
+\stoptaccount
+\stopbuffer
+
+\blank \getbuffer
+
+\blank \setuptaccount[mp=taccount:line] \getbuffer
+
+\blank \setuptaccount[mp=taccount:nose] \getbuffer
+
+\stoptext
