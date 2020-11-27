@@ -1,6 +1,6 @@
 %D \module
 %D   [       file=t-taccount,
-%D        version=2020.11.22,
+%D        version=2020.11.27,
 %D          title=\CONTEXT\ User Module,
 %D       subtitle=Creating T-Account graphics,
 %D         author=Wolfgang Schuster,
@@ -75,7 +75,7 @@
 \to \t_taccount_reset
 
 \appendtoks
-  \let\m_taccount_entry       \gobbletwoarguments
+  \let\m_taccount_entry       \relax
   \let\m_taccount_debit_total \empty
   \let\m_taccount_credit_total\empty
 \to \t_taccount_reset
@@ -108,44 +108,28 @@
 \to \everydefinetaccount
 
 \permanent\tolerant\protected\def\taccount_debit[#1]#;#2#3%
-  {\ifparameter#1\or
-     \getdummyparameters[\c!text=,\c!number=,#1]%
-     \etoksapp\t_taccount_debit{\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
-   \else
-     \toksapp\t_taccount_debit{\m_taccount_entry{#2}{#3}}%
-   \fi
+  {\getdummyparameters[\c!text={#2},\c!number={#3},#1]%
+   \etoksapp\t_taccount_debit{\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
    \ignorespaces}
 
 \permanent\tolerant\protected\def\taccount_debit_total[#1]#;#2%
-  {\ifparameter#1\or
-     \getdummyparameters[\c!number=,#1]%
-     \edef\m_taccount_debit_total{\dummyparameter\c!number}%
-   \else
-     \edef\m_taccount_debit_total{#2}%
-   \fi}
+  {\getdummyparameters[\c!number={#2},#1]%
+   \edef\m_taccount_debit_total{\dummyparameter\c!number}}
 
 \permanent\tolerant\protected\def\taccount_credit[#1]#;#2#3%
-  {\ifparameter#1\or
-     \getdummyparameters[\c!text=,\c!number=,#1]%
-     \etoksapp\t_taccount_credit{\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
-   \else
-     \toksapp\t_taccount_credit{\m_taccount_entry{#2}{#3}}%
-   \fi
+  {\getdummyparameters[\c!text={#2},\c!number={#3},#1]%
+   \etoksapp\t_taccount_credit{\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}%
    \ignorespaces}
 
 \permanent\tolerant\protected\def\taccount_credit_total[#1]#;#2%
-  {\ifparameter#1\or
-     \getdummyparameters[\c!number=,#1]%
-     \edef\m_taccount_credit_total{\dummyparameter\c!number}%
-   \else
-     \edef\m_taccount_credit_total{#2}%
-   \fi}
+  {\getdummyparameters[\c!number={#2},#1]%
+   \edef\m_taccount_credit_total{\dummyparameter\c!number}}
 
 \appendtoks
-  \aliased\let\debit      \taccount_debit
-  \aliased\let\credit     \taccount_credit
-  \aliased\let\debittotal \taccount_debit_total
-  \aliased\let\credittotal\taccount_credit_total
+  \enforced\let\debit      \taccount_debit
+  \enforced\let\credit     \taccount_credit
+  \enforced\let\debittotal \taccount_debit_total
+  \enforced\let\credittotal\taccount_credit_total
 \to \t_taccount_reset
 
 \appendtoks
