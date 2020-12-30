@@ -125,7 +125,7 @@
 \unexpanded\def\taccount_debit
   {\doifelsenextoptionalcs\taccount_debit_assignment\taccount_debit_argument}
 
-\def\taccount_debit_assignment[#1]
+\def\taccount_debit_assignment[#1]%
   {\getdummyparameters[\c!text=,\c!number=,#1]%
    \normalexpanded{\t_taccount_debit{\the\t_taccount_debit\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}}%
    \ignorespaces}
@@ -147,7 +147,7 @@
 \unexpanded\def\taccount_credit
   {\doifelsenextoptionalcs\taccount_credit_assignment\taccount_credit_argument}
 
-\def\taccount_credit_assignment[#1]
+\def\taccount_credit_assignment[#1]%
   {\getdummyparameters[\c!text=,\c!number=,#1]%
    \normalexpanded{\t_taccount_credit{\the\t_taccount_credit\noexpand\m_taccount_entry{\dummyparameter\c!text}{\dummyparameter\c!number}}}%
    \ignorespaces}
@@ -282,7 +282,6 @@
     TaccountTextWdith    := \the\d_taccount_text ;
     TaccountNumberWidth  := \the\d_taccount_number ;
     %
-    TaccountColumnWidth  := \the\dimexpr\d_taccount_total/2\relax ;
     TaccountTotalWidth   := \the\d_taccount_total ;
     TaccountColumnWidth  := \the\d_taccount_column ;
     %

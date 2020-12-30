@@ -241,7 +241,6 @@
     TaccountTextWdith    := \the\d_taccount_text ;
     TaccountNumberWidth  := \the\d_taccount_number ;
     %
-    TaccountColumnWidth  := \the\dimexpr\d_taccount_total/2\relax ;
     TaccountTotalWidth   := \the\d_taccount_total ;
     TaccountColumnWidth  := \the\d_taccount_column ;
     %
